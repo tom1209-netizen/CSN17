@@ -26,6 +26,18 @@
 *.a
 *.lib
 
+# IDE-specific files
+.idea/
+.vscode/
+
+# CMake-generated files
+CMakeCache.txt
+CMakeFiles/
+cmake-build-debug/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
 # Executables
 *.exe
 *.out
