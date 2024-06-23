@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 //  Question 3:
@@ -6,68 +7,60 @@ using namespace std;
 //  followed by an element from B, then again from A, and so on until both arrays are empty.
 //  These combined arrays must be sorted in ascending order and must end with an element from B.
 
-void printArray(int arr[], int n) {
+struct FindCombinedContext {
+    const vector<int>& A;
+    const vector<int>& B;
+    vector<int>& C;
+    int m;
+    int n;
+    bool flag = true;
+
+    FindCombinedContext(const vector<int>& a, const vector<int>& b, vector<int>& c)
+        : A(a), B(b), C(c), m(static_cast<int>(a.size())), n(static_cast<int>(b.size())) {}
+};
+
+void printVector(const vector<int>& vec, int n) {
     for (int i = 0; i < n; i++) {
-        cout << arr[i] << " ";
+        cout << vec[i] << " ";
     }
     cout << endl;
 }
 
-//    State transition graph
-//    State 0:
-//      - If flag is true -> Transition to State A
-//      - If flag is false -> Transition to State B
-//
-//    State A:
-//      - For each k from i to m:
-//        - If len == 0 or A[k] > C[len - 1]:
-//          - Set C[len] = A[k]
-//          - Transition to State B with (i = k + 1, j, m, n, len + 1, !flag)
-//
-//    State B:
-//      - For each k from j to n:
-//        - If len == 0 or B[k] > C[len - 1]:
-//          - Set C[len] = B[k]
-//          - If k == n - 1:
-//            - Transition to State End
-//          - Else:
-//            - Transition to State A with (i, j = k + 1, m, n, len + 1, !flag)
-//
-//    State End:
-//      - Print the array C
-//      - End
-
-int find_combined_sorted_arrays(int A[], int B[], int C[], int i, int j, int m, int n, int len, bool flag) {
-    if (flag) {
-        for (int k = i; k < m; k++) {
-            if (len == 0 || A[k] > C[len - 1]) {
-                C[len] = A[k];
-                find_combined_sorted_arrays(A, B, C, k + 1, j, m, n, len + 1, !flag);
+void find_combined_sorted_vectors(FindCombinedContext& ctx, int i, int j, int len) {
+    if (ctx.flag) {
+        for (int k = i; k < ctx.m; k++) {
+            if (len == 0 || ctx.A[k] > ctx.C[len - 1]) {
+                ctx.C[len] = ctx.A[k];
+                ctx.flag = !ctx.flag;
+                find_combined_sorted_vectors(ctx, k + 1, j, len + 1);
+                ctx.flag = !ctx.flag;
             }
         }
-    } else {
-        for (int k = j; k < n; k++) {
-            if (len == 0 || B[k] > C[len - 1]) {
-                C[len] = B[k];
-                if (k == n - 1) {
-                    printArray(C, len + 1);
-                }
-                find_combined_sorted_arrays(A, B, C, i, k + 1, m, n, len + 1, !flag);
+        return;
+    }
+
+    for (int k = j; k < ctx.n; k++) {
+        if (len == 0 || ctx.B[k] > ctx.C[len - 1]) {
+            ctx.C[len] = ctx.B[k];
+            if (k == ctx.n - 1) {
+                printVector(ctx.C, len + 1);
             }
+            ctx.flag = !ctx.flag;
+            find_combined_sorted_vectors(ctx, i, k + 1, len + 1);
+            ctx.flag = !ctx.flag;
         }
     }
 }
 
 int main() {
-    int A[] = {10, 15, 25};
-    int B[] = {1, 5, 20, 30};
+    vector<int> A = {10, 15, 25};
+    vector<int> B = {1, 5, 20, 30};
 
-    int m = sizeof(A) / sizeof(A[0]);
-    int n = sizeof(B) / sizeof(B[0]);
+    vector<int> C(A.size() + B.size());
 
-    int C[m + n];
+    FindCombinedContext ctx(A, B, C);
 
-    find_combined_sorted_arrays(A, B, C, 0, 0, m, n, 0, true);
+    find_combined_sorted_vectors(ctx, 0, 0, 0);
 
     return 0;
 }

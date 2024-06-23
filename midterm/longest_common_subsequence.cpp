@@ -36,7 +36,7 @@ int find_sequence(char* X, char* Y, int m, int n, vector<char>& lcs) {
 }
 
 // Using dynamic programming
-pair<int, char*> find_sequence_dp(char* X, char* Y, int m, int n) {
+pair<int, vector<char>> find_sequence_dp(const char* X, const char* Y, int m, int n) {
     vector<vector<int>> LCS_table(m + 1, vector<int>(n + 1));
 
     // Build the table
@@ -54,10 +54,10 @@ pair<int, char*> find_sequence_dp(char* X, char* Y, int m, int n) {
 
     // Get the string back
     int index = LCS_table[m][n];
-    char* result = new char[index + 1];
-    result[index] = '\0';
+    vector<char> result(index);
 
-    int i = m, j = n;
+    int i = m;
+    int j = n;
     while (i > 0 && j > 0) {
         if (X[i - 1] == Y[j - 1]) {
             result[index - 1] = X[i - 1];
@@ -75,24 +75,3 @@ pair<int, char*> find_sequence_dp(char* X, char* Y, int m, int n) {
 
     return {LCS_table[m][n], result};
 }
-
-//int main() {
-//    char X[] = "HarryDepTrai";
-//    char Y[] = "HarryPro";
-//    int m = sizeof(X)/sizeof(X[0]) - 1; // Remove terminating character
-//    int n = sizeof(Y)/sizeof(Y[0]) - 1; // Remove terminating character
-//
-//    vector<char> lcs;
-//    int length = find_sequence(X, Y, m, n, lcs);
-//    cout << "Length of LCS (find_sequence): " << length << endl;
-//    cout << "LCS (find_sequence): ";
-//    for (auto it = lcs.rbegin(); it != lcs.rend(); ++it) {
-//        cout << *it;
-//    }
-//    cout << endl;
-//    cout << endl;
-//
-//    pair<int, char*> result = find_sequence_dp(X, Y, m, n);
-//    cout << "Length of LCS (find_sequence_dp): " << result.first << endl;
-//    cout << "LCS (find_sequence_dp): " << result.second << endl;
-//}

@@ -1,28 +1,41 @@
 #include <iostream>
+#include <vector>
+#include <stdexcept>
 using namespace std;
 
 //  Question 1:
 //  Given an array of non-negative integers, find three elements in the array
 //  that form a triangle with the largest perimeter.
 
-void swap(int &a, int &b) {
+// Custom exception for triangle formation errors
+class TriangleFormationException : public std::logic_error {
+public:
+    using std::logic_error::logic_error;
+};
+
+void swap(int &a, int &b) noexcept {
     int temp = a;
     a = b;
     b = temp;
 }
 
-void bubbleSort(int arr[], int n) {
-    for (int i = 0; i < n - 1; i++)
-        for (int j = 0; j < n - i - 1; j++)
-            if (arr[j] > arr[j + 1])
+void bubbleSort(vector<int>& arr) {
+    auto n = static_cast<int>(arr.size());
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
                 swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
 }
 
-int findTriangle(int arr[], int n) {
+int findTriangle(vector<int>& arr) {
     // Sort the array
-    bubbleSort(arr, n);
+    bubbleSort(arr);
 
     // Check for largest triangle perimeter
+    auto n = static_cast<int>(arr.size());
     for (int i = n - 1; i >= 2; i--) {
         if (arr[i] < arr[i - 1] + arr[i - 2]) {
             return (arr[i] + arr[i - 1] + arr[i - 2]);
@@ -30,12 +43,5 @@ int findTriangle(int arr[], int n) {
     }
 
     // No triangle combination
-    throw std::runtime_error("Triangle formation is not possible.");
+    throw TriangleFormationException("Triangle formation is not possible.");
 }
-
-//int main() {
-//    int arr[] = {33, 6, 20, 1, 8, 12, 5, 55, 4, 9};
-//    int n = sizeof(arr)/sizeof(arr[0]);
-//
-//    cout << findTriangle(arr, n);
-//}
